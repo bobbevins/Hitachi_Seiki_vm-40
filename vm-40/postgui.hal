@@ -1,0 +1,46 @@
+# Include your custom_postgui HAL commands here
+# This file will not be overwritten when you run PNCconf again
+
+
+
+loadrt time count=2
+loadrt not count=2
+addf time.0 servo-thread
+addf not.0 servo-thread
+addf time.1 servo-thread
+addf not.1 servo-thread
+
+net run-status not.0.in halui.program.is-idle
+net cycle-timer time.0.start not.0.out
+net cycle-seconds pyvcp.time-seconds time.0.seconds
+net cycle-minutes pyvcp.time-minutes time.0.minutes
+net cycle-hours pyvcp.time-hours time.0.hours
+
+net full-cycle-timer time.1.start not.1.out
+net full-cycle-seconds pyvcp.full-time-seconds time.1.seconds
+net full-cycle-minutes pyvcp.full-time-minutes time.1.minutes
+net full-cycle-hours pyvcp.full-time-hours time.1.hours
+
+
+
+net remote-rapid-to-home halui.mdi-command-00 hm2_5i25.0.7i77.0.0.input-28
+net quill-up halui.mdi-command-04 hm2_5i25.0.7i77.0.0.input-27
+
+net x-fixture pyvcp.x-touchoff halui.mdi-command-01
+net y-fixture pyvcp.y-touchoff halui.mdi-command-02
+net z-fixture pyvcp.z-touchoff halui.mdi-command-03
+
+
+net spindle-vel-cmd pyvcp.spindle-speed
+net spindle-vel-cmd pyvcp.spindle-speed1
+
+#net ax-feed pyvcp.vel-feed motion.current-vel
+
+net distance-to-go pyvcp.distance-to-go motion.distance-to-go
+
+# Tool Number
+#net tool-number pyvcp.tool-number <= halui.tool.number
+#net tool-offset pyvcp.tool-offset <= halui.tool.length_offset.z
+# Feedrate
+
+

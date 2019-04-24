@@ -1,0 +1,280 @@
+# Custom Hal commands
+# This file written by Bob Bevins updated Jan 19 2013
+
+#***********************
+# Loading Classic Ladder
+#***********************
+loadrt threads name1=thread period1=1000000 
+loadrt classicladder_rt                                                                          
+addf classicladder.0.refresh thread
+start
+loadusr -nogui classicladder vm40.clp
+
+
+
+
+# axis.N.amp-enable-out
+
+
+# You'd trigger on rising and falling edges of your 
+# relay signal, andturn (for one direction) halui.machine.on ON until 
+# you see the halui.machine.is-on feedback, then turn it back off.  same 
+# for the other direction. <cradek> that is the fully correct solution, 
+# because halui is not realtime so you have to wait for it to see and 
+# respond to your input signals
+
+net Spindle-Overheat hm2_5i25.0.7i77.0.0.input-13 classicladder.0.in-00
+
+#net test-index hm2_5i25.0.7i77.0.0.input-31 classicladder.0.in-03
+#net mpg-x hm2_5i25.0.7i77.0.0.input-18 classicladder.0.in-03
+#net mpg-y hm2_5i25.0.7i77.0.0.input-19 classicladder.0.in-04
+#net mpg-z hm2_5i25.0.7i77.0.0.input-20 classicladder.0.in-05
+
+#net mpg-x hm2_5i25.0.7i84.0.2.output-03 classicladder.0.out-02
+#net mpg-x hm2_5i25.0.7i84.0.2.output-04 classicladder.0.out-03
+#net mpg-x hm2_5i25.0.7i84.0.2.output-04 classicladder.0.out-04
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%
+# End Classic Ladder
+#%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+#***********************
+# Debounce
+#***********************
+
+#loadrt debounce cfg=3
+#addf debounce.0 base-thread
+
+
+#***********************
+# Machine Power
+#***********************
+
+
+#net Power-On hm2_5i25.0.7i77.0.0.input-00 halui.machine.on
+net machine-is-on hm2_5i25.0.7i77.0.0.output-00 hm2_5i25.0.7i77.0.0.output-06
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# END Machine Power Section
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+#%%%%%%%%%%%%%%%%%%%%
+# ALARM SECTION
+#%%%%%%%%%%%%%%%%%%%%
+
+net Alarm-OUT hm2_5i25.0.7i77.0.0.output-04 classicladder.0.out-00
+net Alarm-reset hm2_5i25.0.7i77.0.0.input-14 classicladder.0.in-01
+#net Alarm-silence hm2_5i25.0.7i77.0.0.input-15 classicladder.0.in-02
+
+#--------ALARMS-------------------
+
+#   see in ClassicLadder Section net Spindle-Overheat hm2_5i25.0.7i77.0.0.input-13 classicladder.0.in-00
+
+#%%%%%%%%%%%%%%%%%%%%%%
+# END ALARM  Section
+#%%%%%%%%%%%%%%%%%%%%%%
+
+
+#***********************
+# Toggle
+#***********************
+
+loadrt toggle count=16
+addf toggle.0 servo-thread
+setp toggle.0.debounce 50
+addf toggle.1 servo-thread
+setp toggle.1.debounce 50
+addf toggle.2 servo-thread
+setp toggle.2.debounce 50
+
+addf toggle.3 servo-thread
+setp toggle.3.debounce 50
+addf toggle.4 servo-thread
+setp toggle.4.debounce 50
+addf toggle.5 servo-thread
+setp toggle.5.debounce 50
+addf toggle.6 servo-thread
+setp toggle.6.debounce 50
+addf toggle.7 servo-thread
+setp toggle.7.debounce 50
+addf toggle.8 servo-thread
+setp toggle.8.debounce 50
+addf toggle.9 servo-thread
+setp toggle.9.debounce 50
+
+addf toggle.10 servo-thread
+setp toggle.10.debounce 50
+addf toggle.11 servo-thread
+setp toggle.11.debounce 50
+addf toggle.12 servo-thread
+setp toggle.12.debounce 50
+addf toggle.13 servo-thread
+setp toggle.13.debounce 50
+addf toggle.14 servo-thread
+setp toggle.14.debounce 50
+addf toggle.15 servo-thread
+setp toggle.15.debounce 50
+
+
+
+
+net lite-toggle toggle.0.in <= hm2_5i25.0.7i77.0.0.input-08
+net lite-control toggle.0.out => hm2_5i25.0.7i77.0.0.output-05
+
+net manual-unclamp toggle.6.in <= hm2_5i25.0.7i77.0.0.input-26
+net manual-clamp toggle.6.out => hm2_5i25.0.7i84.0.2.output-15
+
+net flood-toggle toggle.4.in <= hm2_5i25.0.7i77.0.0.input-29
+net flood-control toggle.4.out => hm2_5i25.0.7i77.0.0.output-02
+
+#%%%%%%%%%%%%%%%%%%%%%%
+# ATC Section
+#%%%%%%%%%%%%%%%%%%%%%%
+
+net ATC-Remote-Turn toggle.5.in <= hm2_5i25.0.7i84.0.2.input-06
+net ATC-Remote-Stop toggle.5.out => hm2_5i25.0.7i84.0.2.output-06
+
+#%%%%%%%%%%%%%%%%%%%%%%
+# END ATC Section
+#%%%%%%%%%%%%%%%%%%%%%%
+
+#***********************
+# Toggle Conveyor
+#***********************
+
+net conveyor-toggle toggle.1.in <= hm2_5i25.0.7i77.0.0.input-09
+net conveyor-control toggle.1.out => hm2_5i25.0.7i77.0.0.output-03
+
+
+
+# This was for temp turning on Lube pump. 
+#net cycle-start toggle.8.in <= hm2_5i25.0.7i77.0.0.input-12
+#net hydraulic-pump toggle.8.out => hm2_5i25.0.7i77.0.0.output-06
+#net machine-is-on hm2_5i25.0.7i77.0.0.output-06
+
+
+#***********************
+# Pause/Resume
+#***********************
+
+net cycle-start <= hm2_5i25.0.7i77.0.0.input-12 halui.mode.auto halui.program.run
+#net cycle-stop 
+
+
+
+loadrt and2 count=2
+loadrt or2 count=1
+#loadrt toggle count=1
+loadrt toggle2nist count=1
+
+addf and2.0 servo-thread
+addf and2.1 servo-thread
+addf or2.0 servo-thread
+#addf toggle.0 servo-thread
+addf toggle2nist.0 servo-thread
+
+# External Program Pause/Resume Button
+net pause-resume-btn and2.0.in0 and2.1.in0 <= hm2_5i25.0.7i77.0.0.input-00
+net pause-on toggle2nist.0.is-on and2.0.in1 <= halui.program.is-paused
+net run-on and2.1.in1 <= halui.program.is-running
+net pause-sig or2.0.in0 <= and2.0.out
+net resume-sig or2.0.in1 <= and2.1.out
+net toggle-ok toggle.2.in <= or2.0.out
+net togglesig toggle2nist.0.in <= toggle.2.out
+net toggleon halui.program.pause <= toggle2nist.0.on
+net toggleoff halui.program.resume <= toggle2nist.0.off
+
+
+
+
+
+#***********************
+# MPG and Jog Select
+#***********************
+
+net jog-x-pos hm2_5i25.0.7i84.0.2.input-30
+net jog-x-neg hm2_5i25.0.7i84.0.2.input-31
+
+net jog-y-pos hm2_5i25.0.7i84.0.2.input-28
+net jog-y-neg hm2_5i25.0.7i84.0.2.input-29
+
+net jog-z-pos hm2_5i25.0.7i84.0.2.input-26
+net jog-z-neg hm2_5i25.0.7i84.0.2.input-27
+
+
+loadrt mux4 count=3
+addf mux4.0 servo-thread
+
+
+
+# For velocity mode, set to 1
+# In velocity mode the axis stops when the dial is stopped
+# even if that means the commanded motion is not completed,
+# For position mode (the default), set to 0
+# In position mode the axis will move exactly jog-scale
+# units for each count, regardless of how long that might take,
+setp axis.0.jog-vel-mode 0
+setp axis.1.jog-vel-mode 0
+setp axis.2.jog-vel-mode 0
+
+# The Axis select inputs
+
+# This sets the scale that will be used based on the input to the mux4
+setp mux4.0.in0 0.0001
+setp mux4.0.in1 0.01
+setp mux4.0.in2 0.001
+
+# The inputs to the mux4 component
+net scale1 mux4.0.sel0 <= hm2_5i25.0.7i77.0.0.input-23
+net scale2 mux4.0.sel1 <= hm2_5i25.0.7i77.0.0.input-24
+
+net pend-scale axis.0.jog-scale <= mux4.0.out
+net pend-scale axis.1.jog-scale
+net pend-scale axis.2.jog-scale
+
+
+net mpg-x axis.0.jog-enable <= hm2_5i25.0.7i77.0.0.input-20
+net mpg-y axis.1.jog-enable <= hm2_5i25.0.7i77.0.0.input-21
+net mpg-z axis.2.jog-enable <= hm2_5i25.0.7i77.0.0.input-22
+
+net joint-select-count hm2_5i25.0.7i77.0.0.enc0
+
+net joint-select-count axis.0.jog-counts
+net joint-select-count axis.1.jog-counts
+net joint-select-count axis.2.jog-counts
+
+
+
+
+
+#**********************************
+# PYVCP PANEL
+#**********************************
+
+#net spindle_rpm
+
+
+
+
+#***********************
+# === estop signals ===
+#***********************
+
+loadrt estop_latch
+addf estop-latch.0 servo-thread
+net estop-loopout iocontrol.0.emc-enable-in <= estop-latch.0.ok-out
+net estop-loopin iocontrol.0.user-enable-out => estop-latch.0.ok-in
+net estop-reset iocontrol.0.user-request-enable => estop-latch.0.reset
+net remote-estop estop-latch.0.fault-in <=  hm2_5i25.0.7i77.0.0.input-01-not
+
+#%%%%%%%%%%%%%%%%%%%%%%%
+#  END estop signals 
+#%%%%%%%%%%%%%%%%%%%%%%%
+
